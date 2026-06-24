@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="..\UIPreview\UIForPreview\UIForPreview.csproj" Type="Classic C#" />
+  <Project Path="ProtocolSimulator.csproj" />
+</Solution>

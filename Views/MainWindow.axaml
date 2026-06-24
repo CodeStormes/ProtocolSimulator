@@ -1,0 +1,28 @@
+<Window
+    Height="650"
+    Icon="/Assets/avalonia-logo.ico"
+    Title="{Binding Title}"
+    Width="1000"
+    d:DesignHeight="600"
+    d:DesignWidth="1000"
+    mc:Ignorable="d"
+    x:Class="ProtocolSimulator.Views.MainWindow"
+    x:DataType="vm:MainWindowViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:ProtocolSimulator.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <StackPanel Grid.Row="0">
+            <Menu>
+                <MenuItem Header="" />
+            </Menu>
+        </StackPanel>
+    </Grid>
+</Window>
