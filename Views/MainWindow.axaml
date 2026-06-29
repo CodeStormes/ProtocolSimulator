@@ -19,10 +19,10 @@
     </Design.DataContext>
 
     <Grid RowDefinitions="Auto,*,Auto">
-        <StackPanel Grid.Row="0">
-            <Menu>
-                <MenuItem Header="" />
-            </Menu>
-        </StackPanel>
+        <Menu Background="#1B3358" Grid.Row="0">
+            <MenuItem Foreground="White" Header="设置" />
+            <MenuItem Foreground="White" Header="文件" />
+            <MenuItem Foreground="White" Header="帮助" />
+        </Menu>
     </Grid>
 </Window>

@@ -1,15 +1,18 @@
-<Application xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="ProtocolSimulator.App"
-             xmlns:local="using:ProtocolSimulator"
-             RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+<Application
+    RequestedThemeVariant="Default"
+    x:Class="ProtocolSimulator.App"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:i18n="using:Avalonia.Xaml.Interactions"
+    xmlns:local="using:ProtocolSimulator"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--  "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options.  -->
 
     <Application.DataTemplates>
-        <local:ViewLocator/>
+        <local:ViewLocator />
     </Application.DataTemplates>
-  
+
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>
+    <i18n:I18nProvider x:Key="I18nProvider" defa/>
 </Application>
