@@ -6,6 +6,8 @@
         <entry key="App.axaml" value="ProtocolSimulator.csproj" />
         <entry key="Resources/Languages/Language-EN.axaml" value="ProtocolSimulator.csproj" />
         <entry key="Resources/Languages/Language.axaml" value="ProtocolSimulator.csproj" />
+        <entry key="Resources/Languages/Language.en.axaml" value="ProtocolSimulator.csproj" />
+        <entry key="Resources/Languages/Language.enaxaml.axaml" value="ProtocolSimulator.csproj" />
         <entry key="Views/MainWindow.axaml" value="ProtocolSimulator.csproj" />
       </map>
     </option>

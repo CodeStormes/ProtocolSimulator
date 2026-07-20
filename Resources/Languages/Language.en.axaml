@@ -1,0 +1,7 @@
+﻿<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--  Add Resources Here  -->
+    <system:String x:Key="ProtocolSimulator">ProtocolSimulator</system:String>
+</ResourceDictionary>

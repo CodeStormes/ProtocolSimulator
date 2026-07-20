@@ -1,7 +1,7 @@
 <Window
     Height="650"
     Icon="/Assets/avalonia-logo.ico"
-    Title="{Binding Title}"
+    Title="{DynamicResource ProtocolSimulator}"
     Width="1000"
     d:DesignHeight="600"
     d:DesignWidth="1000"
@@ -19,10 +19,18 @@
     </Design.DataContext>
 
     <Grid RowDefinitions="Auto,*,Auto">
-        <Menu Background="#1B3358" Grid.Row="0">
-            <MenuItem Foreground="White" Header="设置" />
-            <MenuItem Foreground="White" Header="文件" />
-            <MenuItem Foreground="White" Header="帮助" />
-        </Menu>
+        <StackPanel
+            Background="#1B3358"
+            Grid.Row="0"
+            Orientation="Horizontal">
+            <Menu>
+                <MenuItem Foreground="White" Header="设置" />
+                <MenuItem Foreground="White" Header="文件" />
+                <MenuItem Foreground="White" Header="帮助" />
+            </Menu>
+        </StackPanel>
+        <Grid Column="*,3*" Row="1">
+            <Grid Column="0" RowDefinitions="Auto,Auto,Auto,Auto" />
+        </Grid>
     </Grid>
 </Window>
