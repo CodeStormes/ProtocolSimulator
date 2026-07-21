@@ -1,19 +1,19 @@
 <Window
-Height="650"
-Icon="/Assets/avalonia-logo.ico"
-Title="{DynamicResource ProtocolSimulator}"
-Width="1000"
-Background="{DynamicResource SemiGray0}"
-d:DesignHeight="600"
-d:DesignWidth="1000"
-mc:Ignorable="d"
-x:Class="ProtocolSimulator.Views.MainWindow"
-x:DataType="vm:MainWindowViewModel"
-xmlns="https://github.com/avaloniaui"
-xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-xmlns:vm="using:ProtocolSimulator.ViewModels"
-xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	Height="650"
+	Icon="/Assets/avalonia-logo.ico"
+	Title="{DynamicResource ProtocolSimulator}"
+	Width="1000"
+	Background="{DynamicResource SemiGray0}"
+	d:DesignHeight="600"
+	d:DesignWidth="1000"
+	mc:Ignorable="d"
+	x:Class="ProtocolSimulator.Views.MainWindow"
+	x:DataType="vm:MainWindowViewModel"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:ProtocolSimulator.ViewModels"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 	<Design.DataContext>
 		<vm:MainWindowViewModel />
@@ -21,9 +21,9 @@ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 	<Grid RowDefinitions="Auto,*,Auto">
 		<StackPanel
-		Background="#1B3358"
-		Grid.Row="0"
-		Orientation="Horizontal">
+			Background="#1B3358"
+			Grid.Row="0"
+			Orientation="Horizontal">
 			<Menu>
 				<MenuItem Foreground="White" Header="设置" />
 				<MenuItem Foreground="White" Header="文件" />
@@ -32,36 +32,41 @@ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 		</StackPanel>
 		<Grid ColumnDefinitions="4*,auto,4*" Grid.Row="1">
 			<Border
-			Background="White"
-			BoxShadow="0 0 8 0 #20000000"
-			Grid.Column="0"
-			Margin="5">
-				<Grid RowDefinitions="auto,*" />
+				Background="White"
+				BoxShadow="0 0 8 0 #20000000"
+				Grid.Column="0"
+				Margin="5">
+				<Grid RowDefinitions="auto,*">
+					<StackPanel Orientation="Horizontal" Grid.Row="0">
+						<Button Theme="{DynamicResource SolidButton}" Content="{DynamicResource Start}" Margin="5" Command="{Binding StartCommand}" />
+					</StackPanel>
+					<ListBox Grid.Row="1" ItemsSource="{Binding LogItems}" Margin="5">
+						<ListBox.ItemTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
+				</Grid>
 
 			</Border>
 			<Border
-			Background="White"
-			BoxShadow="0 0 8 0 #20000000"
-			Grid.Column="1"
-			Margin="1">
-				<Grid RowDefinitions="Auto,*" >
-					<ListBox Grid.Row="1">
-						<ListBox.DataTemplates>
-							<DataTemplate>
-								<StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-									<CheckBox IsChecked="{Binding}"/>
-									<TextBlock Text="{Binding}" Margin="5"/>
-								</StackPanel>
-							</DataTemplate>
-						</ListBox.DataTemplates>
-					</ListBox>
-				</Grid>
+				Background="White"
+				BoxShadow="0 0 8 0 #20000000"
+				Grid.Column="1"
+				Margin="1">
+				<TreeView ItemsSource="{Binding}">
+					<TreeView.Items>
+
+					</TreeView.Items>
+
+				</TreeView>
 			</Border>
 			<Border
-			Background="White"
-			BoxShadow="0 0 8 0 #20000000"
-			Grid.Column="2"
-			Margin="5">
+				Background="White"
+				BoxShadow="0 0 8 0 #20000000"
+				Grid.Column="2"
+				Margin="5">
 				<Grid RowDefinitions="Auto,Auto,Auto,Auto" />
 
 			</Border>
