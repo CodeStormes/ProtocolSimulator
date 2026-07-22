@@ -2,7 +2,7 @@
 	Height="650"
 	Icon="/Assets/avalonia-logo.ico"
 	Title="{DynamicResource ProtocolSimulator}"
-	Width="1000"
+	Width="1400"
 	Background="{DynamicResource SemiGray0}"
 	d:DesignHeight="600"
 	d:DesignWidth="1000"
@@ -12,6 +12,7 @@
 	xmlns="https://github.com/avaloniaui"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:models="using:ProtocolSimulator.Models"
 	xmlns:vm="using:ProtocolSimulator.ViewModels"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
@@ -30,7 +31,7 @@
 				<MenuItem Foreground="White" Header="帮助" />
 			</Menu>
 		</StackPanel>
-		<Grid ColumnDefinitions="4*,auto,4*" Grid.Row="1">
+		<Grid ColumnDefinitions="4*,3*,4*" Grid.Row="1">
 			<Border
 				Background="White"
 				BoxShadow="0 0 8 0 #20000000"
@@ -55,10 +56,16 @@
 				BoxShadow="0 0 8 0 #20000000"
 				Grid.Column="1"
 				Margin="1">
-				<TreeView ItemsSource="{Binding}">
-					<TreeView.Items>
-
-					</TreeView.Items>
+				<TreeView ItemsSource="{Binding CommandList}" SelectedItem="{Binding SelectedCommand}">
+					<TreeView.DataTemplates>
+						<TreeDataTemplate DataType="{x:Type vm:CommandTreeMode}" ItemsSource="{Binding Children}">
+							<StackPanel Orientation="Horizontal" Margin="5" VerticalAlignment="Center">
+								<CheckBox IsChecked="{Binding IsCommand}" VerticalAlignment="Center"/>
+								<TextBlock Text="{Binding DisplayName}" Margin='5' VerticalAlignment="Center"/>
+								<TextBlock Foreground="{DynamicResource SemiColorText2}" Text="{Binding CodeText}" VerticalAlignment="Center"/>
+							</StackPanel>
+						</TreeDataTemplate>
+					</TreeView.DataTemplates>
 
 				</TreeView>
 			</Border>
