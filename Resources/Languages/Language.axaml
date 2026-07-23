@@ -5,4 +5,5 @@
     <!--  Add Resources Here  -->
     <system:String x:Key="ProtocolSimulator">协议模拟器</system:String>
     <system:String x:Key="Start">开始</system:String>
+    <system:String x:Key="Save">保存</system:String>
 </ResourceDictionary>

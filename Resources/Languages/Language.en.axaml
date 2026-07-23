@@ -5,4 +5,5 @@
     <!--  Add Resources Here  -->
     <system:String x:Key="ProtocolSimulator">ProtocolSimulator</system:String>
     <system:String x:Key="Start">Start</system:String>
+    <system:String x:Key="Save">Save</system:String>
 </ResourceDictionary>

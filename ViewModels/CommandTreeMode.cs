@@ -11,15 +11,18 @@ namespace ProtocolSimulator.ViewModels
 {
     public partial class CommandTreeMode : ObservableObject
     {
-        public CommandTreeMode(string displayName,MBusDataType? command = null)
+        public CommandTreeMode(string displayName, string path, MBusDataType? command = null)
         {
             DisplayName = displayName;
+            HandlerFilePath = path;
             Command = command;
         }
 
         public string DisplayName { get; }
 
-        MBusDataType? Command { get; }
+        public string HandlerFilePath;
+
+        public MBusDataType? Command { get; }
 
         public ObservableCollection<CommandTreeMode> Children { get; } = new ObservableCollection<CommandTreeMode>();
 
@@ -39,6 +42,9 @@ namespace ProtocolSimulator.ViewModels
         }
 
         [ObservableProperty]
-        public bool _isEnable;
+        private bool _isFileExist;
+
+        [ObservableProperty]
+        private bool _isEnable;
     }
 }
