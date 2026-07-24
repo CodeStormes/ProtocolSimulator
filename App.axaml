@@ -12,7 +12,6 @@
     </Application.DataTemplates>
 
     <Application.Styles>
-        <FluentTheme />
         <semi:SemiTheme/>
         <semi:SemiPopupAnimations/>
     </Application.Styles>

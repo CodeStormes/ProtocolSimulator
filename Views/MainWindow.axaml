@@ -26,7 +26,7 @@
 			Grid.Row="0"
 			Orientation="Horizontal">
 			<Menu>
-				<MenuItem Foreground="White" Header="设置" />
+				<MenuItem Foreground="White" Header="设置" Click="SettingWindow_Click"/>
 				<MenuItem Foreground="White" Header="文件" />
 				<MenuItem Foreground="White" Header="帮助" />
 			</Menu>
@@ -44,7 +44,10 @@
 					<ListBox Grid.Row="1" ItemsSource="{Binding LogItems}" Margin="5">
 						<ListBox.ItemTemplate>
 							<DataTemplate>
-								<TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+								<StackPanel>
+									<TextBlock Text="{Binding DateTime}"/>
+									<TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+								</StackPanel>
 							</DataTemplate>
 						</ListBox.ItemTemplate>
 					</ListBox>
@@ -81,22 +84,21 @@
 				Margin="5">
 				<Grid RowDefinitions="Auto,*" IsEnabled="{Binding SelectedCommand.IsEnable,FallbackValue= false}">
 					<StackPanel Orientation="Horizontal" Grid.Row="0" Margin="5">
-						<Button Theme="{DynamicResource SolidButton}" Content="{DynamicResource Save}" Command="{Binding SaveCommand}"/>					
+						<Button Theme="{DynamicResource SolidButton}" Content="{DynamicResource Save}" Command="{Binding SaveCommand}"/>
 					</StackPanel>
 					<TextBox Grid.Row="1"
-							 Text="{Binding CurrentCommandText,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" 
+							 Text="{Binding CurrentCommandText,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
 							 VerticalAlignment="Stretch"
 							 VerticalContentAlignment="Top"
-							 AcceptsReturn="True" 
-							 TextWrapping="Wrap" 
-							 FontFamily="Consolas, Microsoft YaHei" 
-							 FontSize="16" 
+							 AcceptsReturn="True"
+							 TextWrapping="Wrap"
+							 FontFamily="Consolas, Microsoft YaHei"
+							 FontSize="16"
 							 Background="White"
-							 BorderBrush="#e1e2e6" 
-							 BorderThickness="0 1 0 0" 
+							 BorderBrush="#e1e2e6"
+							 BorderThickness="0 1 0 0"
 							 Padding="10"/>
 				</Grid>
-
 			</Border>
 		</Grid>
 	</Grid>

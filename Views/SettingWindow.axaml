@@ -1,0 +1,66 @@
+<Window xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+		xmlns:vm="using:ProtocolSimulator.ViewModels"
+		x:DataType="vm:SettingWindowViewModel"
+		x:Class="ProtocolSimulator.Views.SettingWindow"
+		Background="{DynamicResource SemiGrey0}"
+		Width="500"
+		Icon="/Assets/avalonia-logo.ico"
+		Title="{DynamicResource SettingWindowTitle}"
+		CanResize="False">
+	<Grid RowDefinitions="*,auto">
+		<Border
+		Grid.Row="0"
+		Background="White"
+		BoxShadow="0 0 8 0 #20000000"
+		Padding="18">
+			<StackPanel Spacing="18">
+				<StackPanel Spacing="4">
+					<TextBlock Text="{DynamicResource SerialPortDevice}"/>
+					<Grid ColumnDefinitions="*,auto" ColumnSpacing="8">
+						<ComboBox
+						Grid.Column="0"
+						PlaceholderText="{DynamicResource PlaceholderSerial}"
+						ItemsSource="{Binding PortsCollection}"
+						SelectedItem="{Binding SelectedPortName,Mode=TwoWay}"/>
+						<Button
+						Grid.Column="1"
+						Theme="{DynamicResource SolidButton}"
+						Classes="Primary"
+						Content="{DynamicResource BtnRefresh}"
+						Command="{Binding RefreshSerialPortsCommand}"/>
+					</Grid>
+				</StackPanel>
+
+				<StackPanel Spacing="8">
+					<TextBlock Text="{DynamicResource ConnectionParameter}"/>
+					<Grid ColumnDefinitions="120,*"
+						  RowDefinitions="auto,auto,auto,auto,auto"
+						  RowSpacing="8"
+						  ColumnSpacing="12">
+						<TextBlock VerticalAlignment="Center" Grid.Column="1" Grid.Row="0" Text="{DynamicResource BaudRate}"/>
+						<ComboBox Grid.Column="0" Grid.Row="0" ItemsSource="{Binding BaudRates}" SelectedItem="{Binding BaudRate,Mode=TwoWay}"/>
+						<TextBlock VerticalAlignment="Center" Grid.Column="1" Grid.Row="1" Text="{DynamicResource Parity}"/>
+						<ComboBox Grid.Column="0" Grid.Row="1" ItemsSource="{Binding ParityOptions}" SelectedItem="{Binding Parity,Mode=TwoWay}"/>
+						<TextBlock VerticalAlignment="Center" Grid.Column="1" Grid.Row="2" Text="{DynamicResource DataBits}"/>
+						<ComboBox Grid.Column="0" Grid.Row="2" ItemsSource="{Binding DataBitsOptions}" SelectedItem="{Binding DataBits,Mode=TwoWay}"/>
+						<TextBlock VerticalAlignment="Center" Grid.Column="1" Grid.Row="3" Text="{DynamicResource StopBits}"/>
+						<ComboBox Grid.Column="0" Grid.Row="3" ItemsSource="{Binding StopBitsOptions}" SelectedItem="{Binding StopBits,Mode=TwoWay}"/>
+					</Grid>
+				</StackPanel>
+
+				<StackPanel Spacing="8">
+					<TextBlock Text="{DynamicResource CurrentStatus}" FontWeight="SemiBold"/>
+					<TextBlock Text="{Binding ConnectionStatusText}" Foreground="#666666"/>
+				</StackPanel>
+			</StackPanel>
+		</Border>
+		<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+			<Button Theme="{DynamicResource SolidButton}" Classes="Primary" Content="{DynamicResource Connect}" Width="80" Margin="0,0,8,0" Command="{Binding ConnectCommand}"/>
+			<Button Theme="{DynamicResource SolidButton}" Classes="Danger" Content="Cancel" Width="80" Click="Cancel_Click"/>
+		</StackPanel>
+	</Grid>
+</Window>

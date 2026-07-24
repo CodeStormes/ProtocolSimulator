@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ProtocolSimulator.Models;
 
-namespace ZennerPacketInspector.Utils
+namespace ProtocolSimulator.Utils
 {
     [Target("NlogRule")]
     public class NlogRuleTarget: TargetWithLayout

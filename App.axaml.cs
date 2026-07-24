@@ -7,18 +7,23 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog.Config;
 using NLog.Extensions.Logging;
+using ProtocolSimulator.Services;
+using ProtocolSimulator.Utils;
 using ProtocolSimulator.ViewModels;
 using ProtocolSimulator.Views;
+using System;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Security.Authentication.ExtendedProtection;
-using ZennerPacketInspector.Utils;
 
 namespace ProtocolSimulator
 {
     public partial class App : Application
     {
         private ServiceProvider _serviceProvider;
+
+        public static IServiceProvider Services { get; private set; } = null!;
+
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
@@ -38,7 +43,14 @@ namespace ProtocolSimulator
 
             service.AddSingleton<MainWindowViewModel>();
 
+            service.AddSingleton<SettingWindowViewModel>();
+
+            service.AddTransient<SettingWindow>();
+            service.AddSingleton<SerialPortService>();
+
             _serviceProvider = service.BuildServiceProvider();
+
+            Services = _serviceProvider;
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {

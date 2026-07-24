@@ -6,4 +6,15 @@
     <system:String x:Key="ProtocolSimulator">ProtocolSimulator</system:String>
     <system:String x:Key="Start">Start</system:String>
     <system:String x:Key="Save">Save</system:String>
+    <system:String x:Key="BtnRefresh">Refresh</system:String>
+    <system:String x:Key="Connect">Connect</system:String>
+    <system:String x:Key="PlaceholderSerial">Please Choice Serial Port</system:String>
+    <system:String x:Key="ConnectionParameter">Connection Parameter</system:String>
+    <system:String x:Key="BaudRate">Baud Rate</system:String>
+    <system:String x:Key="Parity">Parity</system:String>
+    <system:String x:Key="DataBits">Data Bits</system:String>
+    <system:String x:Key="StopBits">Stop Bits</system:String>
+    <system:String x:Key="SettingWindowTitle">Communication Setting</system:String>
+    <system:String x:Key="SerialPortDevice">Serial Port Device</system:String>
+    <system:String x:Key="CurrentStatus">Current Status:</system:String>
 </ResourceDictionary>
