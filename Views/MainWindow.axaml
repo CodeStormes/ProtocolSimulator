@@ -1,6 +1,6 @@
 <Window
 	Height="800"
-	Icon="/Assets/avalonia-logo.ico"
+	Icon="/Resources/Images/Protocool.ico"
 	Title="{DynamicResource ProtocolSimulator}"
 	Width="1400"
 	Background="{DynamicResource SemiGray0}"

@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace ProtocolSimulator.ViewModels
@@ -126,7 +127,7 @@ namespace ProtocolSimulator.ViewModels
         }
 
         [RelayCommand]
-        private void Start()
+        private async Task Start()
         {
             try
             {
@@ -143,6 +144,12 @@ namespace ProtocolSimulator.ViewModels
                 }
 
                 byte[] requestBytes = Utils.LuaScriptHelper.BuildCommandFromLua(SelectedCommand.HandlerFilePath);
+
+                _serialPortService.DiscardInBuffer();
+
+                await _serialPortService.SendWakeupAsync(2100);
+
+                _serialPortService.Write(new byte[1] {0x00});
 
                 _serialPortService.Write(requestBytes);
 
