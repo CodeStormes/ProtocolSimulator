@@ -34,6 +34,7 @@
         Common_GetCommunicationScenario = 0x91FF,
         Common_SetCommunicationScenario = 0x92FF,
         Common_GetPrintedSerialNumber = 0x93FF,
+        Common_SetPrintedSerialNumber = 0x93FF,
         Common_SetGetLocalInterfaceEncryption = 0x94FF,
         Common_GetSelectableCommunicationScenarios = 0x95FF,
         Common_SetGetDisplayConfiguration = 0x96FF,

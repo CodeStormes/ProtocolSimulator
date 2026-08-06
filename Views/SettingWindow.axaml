@@ -5,13 +5,14 @@
 		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 		xmlns:vm="using:ProtocolSimulator.ViewModels"
 		x:DataType="vm:SettingWindowViewModel"
+		xmlns:communicationViews="using:Zenner.Communication.Avalonia.Views"
 		x:Class="ProtocolSimulator.Views.SettingWindow"
 		Background="{DynamicResource SemiGrey0}"
 		Width="500"
 		Icon="/Assets/avalonia-logo.ico"
 		Title="{DynamicResource SettingWindowTitle}"
 		CanResize="False">
-	<Grid RowDefinitions="*,auto">
+	<!-- <Grid RowDefinitions="*,auto">
 		<Border
 		Grid.Row="0"
 		Background="White"
@@ -62,5 +63,7 @@
 			<Button Theme="{DynamicResource SolidButton}" Classes="Primary" Content="{DynamicResource Connect}" Width="80" Margin="0,0,8,0" Command="{Binding ConnectCommand}"/>
 			<Button Theme="{DynamicResource SolidButton}" Classes="Danger" Content="Cancel" Width="80" Click="Cancel_Click"/>
 		</StackPanel>
-	</Grid>
+	</Grid> -->
+<communicationViews:CommunicationPanel DataContext="{Binding CommunicationPanel}"/>
+	
 </Window>

@@ -15,6 +15,8 @@ using System;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Security.Authentication.ExtendedProtection;
+using Zenner.Communication.Avalonia.ViewModels;
+using Zenner.Communication.Client;
 
 namespace ProtocolSimulator
 {
@@ -47,6 +49,8 @@ namespace ProtocolSimulator
 
             service.AddTransient<SettingWindow>();
             service.AddSingleton<SerialPortService>();
+            service.AddSingleton<CommunicationController>();
+            service.AddSingleton<CommunicationPanelViewModel>();
 
             _serviceProvider = service.BuildServiceProvider();
 

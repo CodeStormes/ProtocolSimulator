@@ -8,6 +8,7 @@ using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Zenner.Communication.Avalonia.ViewModels;
 
 namespace ProtocolSimulator.ViewModels
 {
@@ -40,10 +41,13 @@ namespace ProtocolSimulator.ViewModels
 
         private readonly SerialPortService _serialPortService;
 
-        public SettingWindowViewModel(SerialPortService serialPortService)
+        public CommunicationPanelViewModel CommunicationPanel { get; }
+
+        public SettingWindowViewModel(SerialPortService serialPortService,CommunicationPanelViewModel communicationPanel)
         {
-            _serialPortService = serialPortService;
-            RefreshSerialPorts();
+            //_serialPortService = serialPortService;
+            CommunicationPanel = communicationPanel;
+            //RefreshSerialPorts();
         }
 
         private string _selectedPortName;
@@ -94,25 +98,25 @@ namespace ProtocolSimulator.ViewModels
             set => SetProperty(ref _connectionStatusText, value);
         }
 
-        [RelayCommand]
-        public void RefreshSerialPorts()
-        {
-            PortsCollection.Clear();
+        //[RelayCommand]
+        //public void RefreshSerialPorts()
+        //{
+        //    PortsCollection.Clear();
 
-            foreach (string portName in _serialPortService.GetPortNames())
-            {
-                PortsCollection.Add(portName);
-            }
+        //    foreach (string portName in _serialPortService.GetPortNames())
+        //    {
+        //        PortsCollection.Add(portName);
+        //    }
 
-            if (SelectedPortName == null && PortsCollection.Count > 0)
-            {
-                SelectedPortName = PortsCollection[0];
-            }
+        //    if (SelectedPortName == null && PortsCollection.Count > 0)
+        //    {
+        //        SelectedPortName = PortsCollection[0];
+        //    }
 
-            ConnectionStatusText = PortsCollection.Count == 0
-                ? "没有检测到可用串口。"
-                : $"检测到 {PortsCollection.Count} 个串口。";
-        }
+        //    ConnectionStatusText = PortsCollection.Count == 0
+        //        ? "没有检测到可用串口。"
+        //        : $"检测到 {PortsCollection.Count} 个串口。";
+        //}
 
         [RelayCommand]
         private void Connect()

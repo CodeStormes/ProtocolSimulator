@@ -1,4 +1,5 @@
 ﻿using MoonSharp.Interpreter;
+using ProtocolSimulator.Models.DataType;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,39 @@ namespace ProtocolSimulator.Utils
             }
 
             return ConvertLuaTableToByteArray(luaResult.Table);
+        }
+
+        public static LuaNfcCommand BuildNfcCommandFromLua(string luaFilePath)
+        {
+            var script = new Script();
+            script.DoFile(luaFilePath);
+
+            DynValue function = script.Globals.Get("build_nfc_request");
+
+            if (function.Type != DataType.Function)
+                throw new InvalidOperationException(
+                    "Lua 中没有 build_nfc_request 函数。");
+
+            DynValue result = script.Call(function);
+
+            if (result.Type != DataType.Table)
+                throw new InvalidOperationException(
+                    "build_nfc_request 必须返回 table。");
+
+            DynValue commandValue = result.Table.Get("command");
+            DynValue dataValue = result.Table.Get("data");
+
+            if (commandValue.Type != DataType.Number)
+                throw new InvalidOperationException("command 必须是数字。");
+
+            if (dataValue.Type != DataType.Table)
+                throw new InvalidOperationException("data 必须是 table。");
+
+            return new LuaNfcCommand
+            {
+                Command = checked((byte)commandValue.Number),
+                Data = ConvertLuaTableToByteArray(dataValue.Table)
+            };     
         }
 
         public static byte[] ConvertLuaTableToByteArray(Table luaTable)

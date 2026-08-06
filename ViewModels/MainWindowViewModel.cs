@@ -13,8 +13,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Reflection;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Zenner.Communication.Client;
+using Zenner.Communication.Client.Models.Enums;
+using Zenner.Communication.Core.Models.Events;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ProtocolSimulator.ViewModels
 {
@@ -40,12 +46,16 @@ namespace ProtocolSimulator.ViewModels
 
         private readonly SerialPortService _serialPortService;
 
-        public MainWindowViewModel(ILogger<MainWindowViewModel> logger,SerialPortService serialPortService)
+        private readonly CommunicationController _communication;
+
+        public MainWindowViewModel(ILogger<MainWindowViewModel> logger,SerialPortService serialPortService,CommunicationController communication)
         {
             _logger = logger;
             _serialPortService = serialPortService;
+            _communication = communication;
             CommandList = InitialCommandList();
 
+            _communication.BytesReceived += Communication_BytesReceived;
             _logReceivedHandler += OnLog;
             NlogRuleTarget.OnLogReceived += _logReceivedHandler;
             _serialPortService.BytesReceived += SerialPortService_BytesReceived;
@@ -67,11 +77,18 @@ namespace ProtocolSimulator.ViewModels
         {
             Dictionary<string, CommandTreeMode> result = new();
 
-            foreach (MBusDataType command in Enum.GetValues(typeof(MBusDataType)))
+            FieldInfo[] enumFields = typeof(MBusDataType).GetFields(BindingFlags.Public | BindingFlags.Static);
+
+            foreach (FieldInfo enumField in enumFields)
             {
-                string[] commamdNode = command.ToString().Split("_");
-                string commandType = commamdNode[0];
-                string commandName = commamdNode[1];
+                string enumName = enumField.Name;
+
+                MBusDataType command = (MBusDataType)enumField.GetRawConstantValue();
+
+                string[] commandNode = enumName.Split("_", 2);
+
+                string commandType = commandNode[0];
+                string commandName = commandNode.Length > 1 ? commandNode[1] : enumName;
 
                 if (!result.TryGetValue(commandType, out CommandTreeMode node))
                 {
@@ -133,32 +150,79 @@ namespace ProtocolSimulator.ViewModels
             {
                 if (SelectedCommand?.IsCommand != true)
                 {
-                    _logger.LogWarning("请选择一个具体命令节点。");
+                    _logger.LogWarning("请选择具体命令。");
                     return;
                 }
 
-                if (!_serialPortService.IsOpen)
+                if (!_communication.IsConnected)
                 {
-                    _logger.LogWarning("串口未打开，请先在设置窗口中连接串口。");
+                    _logger.LogWarning("请先在设置窗口连接通讯设备。");
                     return;
                 }
 
-                byte[] requestBytes = Utils.LuaScriptHelper.BuildCommandFromLua(SelectedCommand.HandlerFilePath);
+                byte[] request = LuaScriptHelper.BuildCommandFromLua(
+                    SelectedCommand.HandlerFilePath);
 
-                _serialPortService.DiscardInBuffer();
+                switch (_communication.Mode)
+                {
+                    case CommunicationMode.Serial:
+                        _communication.SendSerial(request);
+                        break;
 
-                await _serialPortService.SendWakeupAsync(2100);
+                    case CommunicationMode.Irda:
+                        await _communication.SendIrdaAsync(request);
+                        break;
 
-                _serialPortService.Write(new byte[1] {0x00});
+                    case CommunicationMode.DirectNfc:
+                        LuaNfcCommand nfcCommand =
+                            LuaScriptHelper.BuildNfcCommandFromLua(
+                                SelectedCommand.HandlerFilePath);
 
-                _serialPortService.Write(requestBytes);
+                        if (nfcCommand.Command == 0x01)
+                        {
+                            // Identification 是建立 NFC 会话的第一条特殊命令。
+                            _communication.SendNfcIdentification();
+                        }
+                        else
+                        {
+                            _communication.SendNfc(
+                                nfcCommand.Command,
+                                nfcCommand.Data);
+                        }
 
-                _logger.LogInformation("已发送：{bytes}", Utils.LuaScriptHelper.ToHexText(requestBytes));
+                        break;
+
+                    default:
+                        throw new InvalidOperationException("未知通讯方式。");
+                }
+
+                _logger.LogInformation(
+                    "TX: {bytes}",
+                    LuaScriptHelper.ToHexText(request));
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                _logger.LogError("发送失败：{message}", ex.Message);
+                _logger.LogError("发送失败：{message}", exception.Message);
             }
+        }
+
+        private void Communication_BytesReceived(
+            object? sender,
+            BytesReceivedEventArgs eventArgs)
+        {
+            string hex = BitConverter
+                .ToString(eventArgs.Bytes)
+                .Replace("-", " ");
+
+            Application.Current?.Dispatcher.InvokeAsync(() =>
+            {
+                LogItems.Add(new LogItem
+                {
+                    DateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
+                    Message = $"RX: {hex}",
+                    LevelColor = Avalonia.Media.Brushes.DodgerBlue
+                });
+            });
         }
 
         private void SerialPortService_BytesReceived(object? sender, SerialBytesReceivedEventArgs eventArgs)
