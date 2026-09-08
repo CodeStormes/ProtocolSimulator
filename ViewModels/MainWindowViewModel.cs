@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -31,11 +32,16 @@ namespace ProtocolSimulator.ViewModels
         [ObservableProperty]
         private ObservableCollection<LogItem> _logItems = new ObservableCollection<LogItem>();
 
+        public ObservableCollection<ProtocolMenuItem> ProtocolList { get; } = new();
+
         [ObservableProperty]
         private ObservableCollection<CommandTreeMode> _commandList = new();
 
         [ObservableProperty]
         private CommandTreeMode _selectedCommand;
+
+        [ObservableProperty]
+        private string _currentProtocol = string.Empty;
 
         [ObservableProperty]
         private string _currentCommandText;
@@ -48,17 +54,29 @@ namespace ProtocolSimulator.ViewModels
 
         private readonly CommunicationController _communication;
 
-        public MainWindowViewModel(ILogger<MainWindowViewModel> logger,SerialPortService serialPortService,CommunicationController communication)
+        private readonly ResponseRouter _responseRouter;
+
+        private int _wakeupCount;
+
+        public MainWindowViewModel(ILogger<MainWindowViewModel> logger,CommunicationController communication)
         {
             _logger = logger;
-            _serialPortService = serialPortService;
             _communication = communication;
-            CommandList = InitialCommandList();
+            //CommandList = InitialCommandList();
+            LoadScripts();
 
             _communication.BytesReceived += Communication_BytesReceived;
             _logReceivedHandler += OnLog;
             NlogRuleTarget.OnLogReceived += _logReceivedHandler;
-            _serialPortService.BytesReceived += SerialPortService_BytesReceived;
+
+            _responseRouter = new ResponseRouter(
+                _communication,
+                () => CommandList
+                    .SelectMany(node => node.Children)
+                    .Where(node => node.IsCommand));
+
+            _responseRouter.ResponseSent += ResponseRouter_ResponseSent;
+            _responseRouter.ResponseFailed += ResponseRouter_ResponseFailed;
         }
 
         private void OnLog(LogItem logItem)
@@ -71,6 +89,25 @@ namespace ProtocolSimulator.ViewModels
                     LogItems.RemoveAt(0);
                 }
             });
+        }
+
+        private void LoadScripts()
+        {
+            var root = Path.Combine(AppContext.BaseDirectory, "Handlers", "Lua");
+
+            if (!Directory.Exists(root))
+            {
+                return;
+            }
+
+            foreach(var item in Directory.EnumerateDirectories(root))
+            {
+                var name = new DirectoryInfo(item).Name;
+                ProtocolList.Add(new ProtocolMenuItem(name, SelectProtocolCommand));
+            }
+
+            if (ProtocolList.FirstOrDefault() is { } first)
+                SelectProtocol(first);
         }
 
         private ObservableCollection<CommandTreeMode> InitialCommandList()
@@ -92,12 +129,12 @@ namespace ProtocolSimulator.ViewModels
 
                 if (!result.TryGetValue(commandType, out CommandTreeMode node))
                 {
-                    node = new CommandTreeMode(commandType, $"Handlers/Lua/{commandName}.lua");
+                    node = new CommandTreeMode(commandType, $"Handlers/Lua/{CurrentProtocol}/{commandName}.lua");
 
                     result.Add(commandType, node);
                 }
 
-                node.Children.Add(new CommandTreeMode(commandName, $"Handlers/Lua/{commandName}.lua", command));
+                node.Children.Add(new CommandTreeMode(commandName, $"Handlers/Lua/{CurrentProtocol}/{commandName}.lua", command));
             }
             return new ObservableCollection<CommandTreeMode>(result.Values);
         }
@@ -130,6 +167,21 @@ namespace ProtocolSimulator.ViewModels
         }
 
         [RelayCommand]
+        private void SelectProtocol(ProtocolMenuItem protocolItem)
+        {
+            if (CurrentProtocol == protocolItem.Name)
+                return;
+
+            _logger.LogInformation("加载协议 {protocolName}", protocolItem.Name);
+            CurrentProtocol = protocolItem.Name;
+
+            foreach (var item in ProtocolList)
+                item.IsChecked = ReferenceEquals(item,protocolItem);
+
+            CommandList = InitialCommandList();
+        }
+
+        [RelayCommand]
         private void Save()
         {
             try
@@ -157,6 +209,12 @@ namespace ProtocolSimulator.ViewModels
                 if (!_communication.IsConnected)
                 {
                     _logger.LogWarning("请先在设置窗口连接通讯设备。");
+                    return;
+                }
+
+                if (_communication.Role != CommunicationRole.Master)
+                {
+                    _logger.LogWarning("当前为从机模式，不能主动发送命令。");
                     return;
                 }
 
@@ -210,6 +268,23 @@ namespace ProtocolSimulator.ViewModels
             object? sender,
             BytesReceivedEventArgs eventArgs)
         {
+            byte[] data = eventArgs.Bytes;
+
+            if(data.All(x => x == 0x55))
+            {
+                _wakeupCount = data.Length;
+                Application.Current?.Dispatcher.InvokeAsync(() =>
+                {
+                    LogItems.Add(new LogItem
+                    {
+                        DateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
+                        Message = $"RX: Wakeup(0x55),count:{_wakeupCount}",
+                        LevelColor = Avalonia.Media.Brushes.DodgerBlue
+                    });
+                });
+                return;
+            }
+
             string hex = BitConverter
                 .ToString(eventArgs.Bytes)
                 .Replace("-", " ");
@@ -238,6 +313,21 @@ namespace ProtocolSimulator.ViewModels
                     LevelColor = Avalonia.Media.Brushes.DodgerBlue
                 });
             });
+        }
+
+        private void ResponseRouter_ResponseSent(object? sender, SerialBytesReceivedEventArgs eventArgs)
+        {
+            _logger.LogInformation(
+                "TX(应答): {bytes}",
+                LuaScriptHelper.ToHexText(eventArgs.Data));
+        }
+
+        private void ResponseRouter_ResponseFailed(object? sender, ResponseRouterErrorEventArgs eventArgs)
+        {
+            _logger.LogError(
+                "应答失败 [{command}]: {message}",
+                eventArgs.CommandName,
+                eventArgs.Message);
         }
     }
 }

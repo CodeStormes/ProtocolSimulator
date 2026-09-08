@@ -1,0 +1,19 @@
+{
+  "avalonia.solutionPath": "ProtocolSimulator.slnx",
+  "avalonia.preview.autoOpen": false,
+  "avalonia.preview.fpsLimit": 15,
+  "avalonia.logLevel": "error",
+  "axaml.trace.server": "off",
+  "dotnet.backgroundAnalysis.analyzerDiagnosticsScope": "openFiles",
+  "dotnet.backgroundAnalysis.compilerDiagnosticsScope": "openFiles",
+  "files.watcherExclude": {
+    "**/bin/**": true,
+    "**/obj/**": true,
+    "**/publish/**": true
+  },
+  "search.exclude": {
+    "**/bin": true,
+    "**/obj": true,
+    "**/publish": true
+  }
+}

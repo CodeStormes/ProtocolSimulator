@@ -169,7 +169,7 @@ namespace ProtocolSimulator.Services
             Close();
         }
 
-        private static bool TakeMbusFrame(List<byte> buffer, out byte[] frame)
+        public static bool TakeMbusFrame(List<byte> buffer, out byte[] frame)
         {
             frame = Array.Empty<byte>();
 

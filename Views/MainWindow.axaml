@@ -16,17 +16,35 @@
 	xmlns:vm="using:ProtocolSimulator.ViewModels"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-	<Design.DataContext>
-		<vm:MainWindowViewModel />
-	</Design.DataContext>
-
 	<Grid RowDefinitions="Auto,*,Auto">
 		<StackPanel
 			Background="#1B3358"
 			Grid.Row="0"
 			Orientation="Horizontal">
 			<Menu>
-				<MenuItem Foreground="White" Header="设置" Click="SettingWindow_Click"/>
+				<MenuItem Foreground="White" Header="设置">
+					<MenuItem Header="通讯设置" Click="SettingWindow_Click"/>
+					<MenuItem Header="协议设置" ItemsSource="{Binding ProtocolList}">
+						<MenuItem.ItemContainerTheme>
+							<ControlTheme TargetType="MenuItem"
+										  BasedOn="{StaticResource {x:Type MenuItem}}"
+										  x:CompileBindings="False">
+								<Setter Property="IsEnabled" Value="True"/>
+								<Setter Property="Header" Value="{Binding Name}"/>
+								<Setter Property="ToggleType" Value="Radio"/>
+								<Setter
+									Property="Command"
+									Value="{Binding SelectCommand}"/>
+								<Setter Property="IsChecked" Value="{Binding IsChecked,Mode=OneWay}"/>
+								<Setter Property="CommandParameter" Value="{Binding}"/>
+							</ControlTheme>
+						</MenuItem.ItemContainerTheme>
+					</MenuItem>
+					<MenuItem Header="语言切换">
+						<MenuItem Header="中文" IsChecked="True"/>
+						<MenuItem Header="英文"/>
+					</MenuItem>
+				</MenuItem>
 				<MenuItem Foreground="White" Header="文件" />
 				<MenuItem Foreground="White" Header="帮助" />
 			</Menu>

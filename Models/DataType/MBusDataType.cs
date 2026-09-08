@@ -116,6 +116,8 @@
         Special_GetNfcDeviceIdentification = 0x360C,
         Special_SetReligiousDay = 0x360D,
         Special_SetGetSmartFunctions = 0x360E,
+        Special_GetValve = 0x360F,
+        Special_SetValve = 0x360F,
 
         // NBIoT commands (FC = 0x37)
         NBIoT_GetModemPartNumber = 0x3700,

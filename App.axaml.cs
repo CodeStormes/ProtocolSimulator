@@ -48,7 +48,6 @@ namespace ProtocolSimulator
             service.AddSingleton<SettingWindowViewModel>();
 
             service.AddTransient<SettingWindow>();
-            service.AddSingleton<SerialPortService>();
             service.AddSingleton<CommunicationController>();
             service.AddSingleton<CommunicationPanelViewModel>();
 

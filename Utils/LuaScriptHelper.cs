@@ -66,6 +66,36 @@ namespace ProtocolSimulator.Utils
             };     
         }
 
+        public static byte[] BuildResponseFromLua(string luaFilePath, byte[] request)
+        {
+            var script = new Script();
+
+            script.DoFile(luaFilePath);
+
+            DynValue luaFunction = script.Globals.Get("build_command_response");
+
+            if (luaFunction.Type != DataType.Function)
+            {
+                throw new InvalidOperationException("The Lua script does not contain a valid 'build_command_response' function.");
+            }
+
+            var requestTable = new Table(script);
+
+            foreach (byte byteValue in request)
+            {
+                requestTable.Append(DynValue.NewNumber(byteValue));
+            }
+
+            DynValue luaResult = script.Call(luaFunction, DynValue.NewTable(requestTable));
+
+            if (luaResult.Type != DataType.Table)
+            {
+                throw new InvalidOperationException("The 'build_command_response' function did not return a table.");
+            }
+
+            return ConvertLuaTableToByteArray(luaResult.Table);
+        }
+
         public static byte[] ConvertLuaTableToByteArray(Table luaTable)
         {
             var bytes = new List<byte>();
