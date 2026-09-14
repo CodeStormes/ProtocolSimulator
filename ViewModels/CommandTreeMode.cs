@@ -11,34 +11,27 @@ namespace ProtocolSimulator.ViewModels
 {
     public partial class CommandTreeMode : ObservableObject
     {
-        public CommandTreeMode(string displayName, string path, MBusDataType? command = null)
+        public CommandTreeMode(string displayName, string path, Enum? command = null,string codeText = "")
         {
             DisplayName = displayName;
             HandlerFilePath = path;
             Command = command;
+            CodeText = codeText;
         }
 
         public string DisplayName { get; }
 
         public string HandlerFilePath;
 
-        public MBusDataType? Command { get; }
+        public Enum? Command { get; }
 
         public ObservableCollection<CommandTreeMode> Children { get; } = new ObservableCollection<CommandTreeMode>();
 
-        public bool IsCommand => Command.HasValue;
+        public bool IsCommand => Command is not null;
 
         public string CodeText
         {
-            get
-            {
-                if (!Command.HasValue)
-                {
-                    return string.Empty;
-                }
-
-                return $"0x{(ushort)Command.Value:X4}";
-            }
+            get;
         }
 
         [ObservableProperty]

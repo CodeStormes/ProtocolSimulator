@@ -8,7 +8,9 @@ namespace ProtocolSimulator.Models.DataType
 {
     public enum NbIot_FuotaDataType
     {
-        Ack,
-        Nack
+        Response_AckForSetup,
+        Response_AckForSegment,
+        Response_AckForPeriodicMessage,
+        Response_Nack
     }
 }

@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using MoonSharp.Interpreter;
 using NLog;
+using ProtocolSimulator.Interfaces;
 using ProtocolSimulator.Models;
 using ProtocolSimulator.Models.DataType;
 using ProtocolSimulator.Models.Events;
@@ -38,7 +39,7 @@ namespace ProtocolSimulator.ViewModels
         private ObservableCollection<CommandTreeMode> _commandList = new();
 
         [ObservableProperty]
-        private CommandTreeMode _selectedCommand;
+        private CommandTreeMode? _selectedCommand;
 
         [ObservableProperty]
         private string _currentProtocol = string.Empty;
@@ -58,7 +59,7 @@ namespace ProtocolSimulator.ViewModels
 
         private int _wakeupCount;
 
-        public MainWindowViewModel(ILogger<MainWindowViewModel> logger,CommunicationController communication)
+        public MainWindowViewModel(ILogger<MainWindowViewModel> logger, CommunicationController communication)
         {
             _logger = logger;
             _communication = communication;
@@ -100,7 +101,7 @@ namespace ProtocolSimulator.ViewModels
                 return;
             }
 
-            foreach(var item in Directory.EnumerateDirectories(root))
+            foreach (var item in Directory.EnumerateDirectories(root))
             {
                 var name = new DirectoryInfo(item).Name;
                 ProtocolList.Add(new ProtocolMenuItem(name, SelectProtocolCommand));
@@ -110,37 +111,21 @@ namespace ProtocolSimulator.ViewModels
                 SelectProtocol(first);
         }
 
-        private ObservableCollection<CommandTreeMode> InitialCommandList()
+        public ObservableCollection<CommandTreeMode> BuildCommandTree()
         {
-            Dictionary<string, CommandTreeMode> result = new();
+            IProtocolTreeProvider provider = CurrentProtocol.Contains("NbIot", StringComparison.OrdinalIgnoreCase) ? new NbIotProtocolTreeProvider() : new MBusProtocolTreeProvider();
 
-            FieldInfo[] enumFields = typeof(MBusDataType).GetFields(BindingFlags.Public | BindingFlags.Static);
-
-            foreach (FieldInfo enumField in enumFields)
-            {
-                string enumName = enumField.Name;
-
-                MBusDataType command = (MBusDataType)enumField.GetRawConstantValue();
-
-                string[] commandNode = enumName.Split("_", 2);
-
-                string commandType = commandNode[0];
-                string commandName = commandNode.Length > 1 ? commandNode[1] : enumName;
-
-                if (!result.TryGetValue(commandType, out CommandTreeMode node))
-                {
-                    node = new CommandTreeMode(commandType, $"Handlers/Lua/{CurrentProtocol}/{commandName}.lua");
-
-                    result.Add(commandType, node);
-                }
-
-                node.Children.Add(new CommandTreeMode(commandName, $"Handlers/Lua/{CurrentProtocol}/{commandName}.lua", command));
-            }
-            return new ObservableCollection<CommandTreeMode>(result.Values);
+            return provider.Build(CurrentProtocol);
         }
 
         partial void OnSelectedCommandChanged(CommandTreeMode? value)
         {
+            if (value is null)
+            {
+                CurrentCommandText = string.Empty;
+                return;
+            }
+
             value.IsFileExist = File.Exists(value.HandlerFilePath);
 
             if (value?.IsCommand != true)
@@ -173,12 +158,16 @@ namespace ProtocolSimulator.ViewModels
                 return;
 
             _logger.LogInformation("加载协议 {protocolName}", protocolItem.Name);
+
+            SelectedCommand = null;
+            CurrentCommandText = string.Empty;
+
             CurrentProtocol = protocolItem.Name;
 
             foreach (var item in ProtocolList)
-                item.IsChecked = ReferenceEquals(item,protocolItem);
+                item.IsChecked = ReferenceEquals(item, protocolItem);
 
-            CommandList = InitialCommandList();
+            CommandList = BuildCommandTree();
         }
 
         [RelayCommand]
@@ -270,7 +259,7 @@ namespace ProtocolSimulator.ViewModels
         {
             byte[] data = eventArgs.Bytes;
 
-            if(data.All(x => x == 0x55))
+            if (data.All(x => x == 0x55))
             {
                 _wakeupCount = data.Length;
                 Application.Current?.Dispatcher.InvokeAsync(() =>
